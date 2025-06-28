@@ -1,66 +1,75 @@
+// App.js
 import React, { useState } from 'react';
+import './App.css';
 
 function App() {
   const [id, setId] = useState('');
   const [result, setResult] = useState(null);
   const [error, setError] = useState('');
+  const [submitted, setSubmitted] = useState(false);
 
   const handleSearch = async () => {
+    setError('');
+    setResult(null);
+    setSubmitted(true);
+
     try {
-      const res = await fetch(`http://localhost:5000/get-result/${id}`);
-      if (!res.ok) {
-        throw new Error('ID not found');
-      }
+      const res = await fetch(`http://localhost:5000/get-result/${id.trim()}`);
+      if (!res.ok) throw new Error('ID not found');
+
       const data = await res.json();
-      setResult(data);
-      setError('');
+      setResult(data.PREDICTED_TARGET);
     } catch (err) {
-      setResult(null);
       setError(err.message);
     }
   };
 
-  return (
-    <div style={{ padding: '2rem', fontFamily: 'Arial, sans-serif' }}>
-      <h2>🔍 Search Prediction Result by UNIQUE_ID</h2>
-
-      <input
-        type="text"
-        placeholder="Enter UNIQUE_ID"
-        value={id}
-        onChange={(e) => setId(e.target.value)}
-        style={{
-          padding: '10px',
-          marginRight: '10px',
-          width: '250px',
-          fontSize: '16px'
-        }}
-      />
-      <button
-        onClick={handleSearch}
-        style={{
-          padding: '10px 20px',
-          fontSize: '16px',
-          cursor: 'pointer',
-          backgroundColor: '#007BFF',
-          color: 'white',
-          border: 'none',
-          borderRadius: '4px'
-        }}
-      >
-        Search
-      </button>
-
-      {error && <p style={{ color: 'red', marginTop: '20px' }}>{error}</p>}
-
-      {result && (
-        <div style={{ marginTop: '30px' }}>
-          <h3>📄 Prediction Result:</h3>
-          <p><strong>UNIQUE_ID:</strong> {result.UNIQUE_ID}</p>
-          <p><strong>TARGET:</strong> {result.TARGET}</p>
-          <p><strong>PREDICTED_TARGET:</strong> {result.PREDICTED_TARGET}</p>
+  if (!submitted) {
+    return (
+      <div className="landing-container">
+        <nav className="navbar">
+          <div className="logo">FICOFORCE</div>
+          <div className="nav-links">
+            <a href="#">HOME</a>
+            <a href="#">LOGIN</a>
+            <a href="#">PROFILE</a>
+          </div>
+        </nav>
+        <div className="main-content">
+          <div className="tagline">
+            <h1>DETECT, TRACK<br />SECURE</h1>
+            <input
+              type="text"
+              placeholder="Enter Account ID"
+              value={id}
+              onChange={(e) => setId(e.target.value)}
+            />
+            <button onClick={handleSearch}>SEARCH</button>
+          </div>
         </div>
-      )}
+      </div>
+    );
+  }
+
+  return (
+    <div className="result-page">
+      <nav className="navbar">
+        <div className="logo">FICOFORCE</div>
+        <div className="nav-links">
+          <a href="#">HOME</a>
+          <a href="#">LOGIN</a>
+          <a href="#">PROFILE</a>
+        </div>
+      </nav>
+      <div className="result-content">
+        {error && <p className="error">{error}</p>}
+        {result === '0' && (
+          <div className="result-box safe">✅ User is <strong>not</strong> a fraudster.</div>
+        )}
+        {result === '1' && (
+          <div className="result-box fraud">⚠️ User is <strong>detected</strong> as a fraudster!</div>
+        )}
+      </div>
     </div>
   );
 }
