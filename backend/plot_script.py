@@ -2,10 +2,10 @@ import pandas as pd
 import sys
 import os
 
-# ---------- CONFIG ----------
+
 csv_path = "fixed.csv"
 
-# ---------- HELPERS ----------
+
 def parse_float(v):
     try:
         return float(v)
@@ -18,13 +18,13 @@ def parse_int(v):
     except (ValueError, TypeError):
         return 0
 
-# ---------- ARGUMENTS ----------
+
 if len(sys.argv) < 2:
     print("No user_id provided")
     sys.exit(1)
 user_id = str(sys.argv[1]).strip()
 
-# ---------- LOAD CSV ----------
+
 if not os.path.isfile(csv_path):
     print(f"File not found: {csv_path}")
     sys.exit(1)
@@ -35,14 +35,14 @@ except Exception as e:
     print("Error reading CSV:", e)
     sys.exit(1)
 
-# ---------- LOOKUP USER ----------
+
 matches = df[df["UNIQUE_ID"].astype(str).str.strip() == user_id]
 if matches.empty:
     print("No data found for this user")
     sys.exit(1)
 row = matches.iloc[0]
 
-# ---------- EXTRACT FIELDS ----------
+
 loan_tenure = parse_float(row.get("LOAN_TENURE"))
 times_irac_slip = parse_float(row.get("TIMES_IRAC_SLIP"))
 last_1_yr_rg3 = parse_float(row.get("LAST_1_YR_RG3"))
@@ -55,7 +55,7 @@ target = parse_int(row.get("TARGET"))
 
 metrics = []
 
-# ---------- RISK RULES ----------
+
 
 # Loan Tenure
 if loan_tenure > 7000:

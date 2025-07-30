@@ -9,18 +9,18 @@ app.use(cors());
 
 const PORT = 5000;
 
-// ✅ Endpoint to generate risk report by calling Python script
+// Endpoint to generate risk report by calling Python script
 app.get('/generate-report/:id', (req, res) => {
   const userId = req.params.id;
 
   // Call Python script
   exec(`python plot_script.py ${userId}`, (error, stdout, stderr) => {
     if (error) {
-      console.error(`❌ Error: ${error.message}`);
+      console.error(`Error: ${error.message}`);
       return res.status(500).json({ status: 'Error generating report' });
     }
     if (stderr) {
-      console.error(`⚠️ Stderr: ${stderr}`);
+      console.error(`Stderr: ${stderr}`);
     }
 
     // Split output into lines
@@ -30,5 +30,5 @@ app.get('/generate-report/:id', (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
